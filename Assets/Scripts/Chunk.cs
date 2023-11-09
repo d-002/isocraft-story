@@ -32,15 +32,11 @@ public class Chunk : MonoBehaviour
 
     [NonSerialized] public List<int> Blocks;
 
-    private MeshFilter _meshFilter;
-    private MeshCollider _meshCollider;
     private readonly FaceUtils _faceUtils = new();
     private readonly int[] _offsetIndex = { 1, -1, ChunkSize, -ChunkSize, ChunkSize2, -ChunkSize2 };
 
     public void Init(Vector3 pos)
     {
-        _meshFilter = GetComponent<MeshFilter>();
-        _meshCollider = GetComponent<MeshCollider>();
         transform.position = pos;
         GenerateBlocks();
         BuildMesh();
@@ -52,11 +48,10 @@ public class Chunk : MonoBehaviour
         for (int x = 0; x < ChunkSize; x++)
             for (int y = 0; y < ChunkSize; y++)
             for (int z = 0; z < ChunkSize; z++)
-                Blocks.Add(NoiseGen.GetBlock(transform.position + new Vector3(x, y, z)));
+                Blocks.Add(NoiseGen.GetBlockAt(transform.position + new Vector3(x, y, z)));
     }
 
-    public void BuildMesh(bool useSurrounding = false)
-    {
+    public void BuildMesh() {
         Mesh mesh = new Mesh();
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
@@ -84,13 +79,13 @@ public class Chunk : MonoBehaviour
                         else if (face == 4 && x == ChunkSize-1) pos.x += 1;
                         else if (face == 5 && x == 0) pos.x -= 1;
                         else other = Blocks[i2];
-                        if (other == -1) other = MapHandler.GetBlockAt(pos);
+                        if (other == -1) other = NoiseGen.GetBlockAt(pos);
                         if (other == 0)
                         {
                             // visible face
                             for (int j = 0; j < 4; j++) vertices.Add(blockPos + _faceUtils.FacesOffsets[face][j]);
 
-                            int n = nFaces << 2;
+                            int n = nFaces<<2;
                             triangles.AddRange(new[] { n, n + 1, n + 2, n, n + 2, n + 3 });
                             uvs.AddRange(Game.Blocks.FromId[Blocks[i]].GetUVs(face));
                             nFaces++;
@@ -104,7 +99,7 @@ public class Chunk : MonoBehaviour
 
         mesh.RecalculateNormals();
 
-        _meshFilter.mesh = mesh;
-        _meshCollider.sharedMesh = mesh;
+        GetComponent<MeshFilter>().mesh = mesh;
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 }

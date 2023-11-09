@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class NoiseGen
 {
-    public static int GetBlock(Vector3 pos)
+    public static int GetBlockAt(Vector3 pos)
     {
         if (Game.Level == -1) // test level
         {
