@@ -31,9 +31,8 @@ public class Player : MonoBehaviour
         bool left = Input.GetMouseButtonDown(0), right = Input.GetMouseButtonDown(1);
         if (left || right)
         {
-            RaycastHit hit;
             Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 // move into or out of the block to get the right targeted block
                 hit.point += 0.01f * (right ? 1 : -1) * hit.normal;

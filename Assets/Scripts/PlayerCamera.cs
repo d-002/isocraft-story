@@ -3,14 +3,15 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
     public Player player;
-    private readonly float _moveDelay = 0.5f, _rotDelay = 0.5f;
+    public Camera cam;
+    private readonly float _moveDelay = 0.5f, _rotDelay = 0.3f, _zoom = 4;
 
     private Vector3 _currentPos;
     private float _lastPlayerY;
 
-    // careful, these vectors components are handled differently
     private Vector3 _currentRot, _startRot, _endRot;
     private float _startRotTime;
+    private float _currentRotDelay; // different possible rotation speed
 
     public void TargetRot(float y)
     {
@@ -22,6 +23,7 @@ public class PlayerCamera : MonoBehaviour
         if (_startRot.y - y > 180) _endRot.y += 360;
         else if (y - _startRot.y > 180) _startRot.y += 360;
         _startRotTime = Time.time;
+        _currentRotDelay = _rotDelay * (1 + _lastPlayerY / 4);
     }
 
     private float SmoothStep(float t)
@@ -44,7 +46,7 @@ public class PlayerCamera : MonoBehaviour
         Vector3 pPos = player.transform.position;
         Vector3 m = player.Body.Movement;
 
-        // position and X rotation
+        // **smoothed, real-time update**: position, X rotation, zoom
         // don't update if player is moving up, or jumping into no above block
         float dy = player.Body.Movement.y;
         if (dy == 0 || (dy < 0 && pPos.y < player.GroundedHeight)) _lastPlayerY = player.transform.position.y;
@@ -55,12 +57,13 @@ public class PlayerCamera : MonoBehaviour
         float fps = Time.deltaTime == 0 ? 10e6f : _moveDelay / Time.deltaTime;
         _currentPos = (_currentPos * (fps - 1) + pPos) / fps;
         _currentRot.x = (_currentRot.x * (fps - 1) + 100 - _lastPlayerY * 10) / fps;
+        cam.orthographicSize = _zoom * (1 + _lastPlayerY / 10);
         
-        // Y rotation
-        float end = _startRotTime+_rotDelay;
+        // **interpolation, discrete update**: Y rotation
+        float end = _startRotTime+_currentRotDelay;
         if (Time.time < end)
         {
-            float t = SmoothStep((Time.time - _startRotTime) / _rotDelay);
+            float t = SmoothStep((Time.time - _startRotTime) / _currentRotDelay);
             _currentRot.y = _startRot.y + (_endRot.y - _startRot.y) * t;
         }
         transform.rotation = Quaternion.Euler(_currentRot);

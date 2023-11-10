@@ -12,6 +12,7 @@ public static class NoiseGen
         }
         if (Game.Level == 0) // overworld (temporary test)
         {
+            if (pos.x == 0) return pos.x < (pos.x % 8 + 8) % 8 ? Game.Blocks.Cobblestone : Game.Blocks.Air;
             if (pos.y == 0) return Game.Blocks.Bedrock;
             float height = Mathf.PerlinNoise(pos.x / 10, pos.z / 10) * 2 + 3;
             if (pos.y > height) return Game.Blocks.Air;
