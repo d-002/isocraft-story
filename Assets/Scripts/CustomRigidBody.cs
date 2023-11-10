@@ -142,7 +142,7 @@ public class CustomRigidBody
         if (delta > 0.1f) delta = 0.1f;
 
         // keys movement
-        MoveRelative = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        MoveRelative = new Vector3(Input.GetAxisRaw("Horizontal") * 0.8f, 0, Input.GetAxisRaw("Vertical")).normalized;
         Vector3 move = _transform.rotation * MoveRelative;
         float speed = Input.GetKey(KeyCode.LeftControl) ? 1.7f * _speed : _speed;
         Movement += move * (speed * delta);

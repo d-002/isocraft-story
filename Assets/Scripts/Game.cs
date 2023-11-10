@@ -60,6 +60,7 @@ public class Game : MonoBehaviour
     public Texture atlas;
     [NonSerialized] public static float TickRate = 20;
     [NonSerialized] public static int Level = 0;
+    [NonSerialized] public static int Seed = 69;
 
     static class Tiles
     {
@@ -91,5 +92,10 @@ public class Game : MonoBehaviour
             Stone = 3,
             Bedrock = 4,
             Cobblestone = 5;
+    }
+
+    void Start()
+    {
+        NoiseGen.Init();
     }
 }

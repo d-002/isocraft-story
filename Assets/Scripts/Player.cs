@@ -80,11 +80,10 @@ public class Player : MonoBehaviour
             change = true;
             rotation.y += 45;
         }
-        if (change)
-        {
-            transform.rotation = Quaternion.Euler(rotation);
-            playerCamera.TargetRot(rotation.y);
-        }
+        if (change) playerCamera.GoalRot.y = rotation.y;
+
+        rotation.y = camera.transform.rotation.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(rotation);
 
         PlaceBreak();
 
