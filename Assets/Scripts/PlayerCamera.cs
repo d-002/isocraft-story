@@ -32,7 +32,7 @@ public class PlayerCamera : MonoBehaviour
         if (m.y == 0 || (m.y < 0 && pPos.y < player.GroundedHeight)) _lastPlayerY = player.transform.position.y;
 
         // edit target position: use last Y, move camera when walking up/down, rotate when walking left/right
-        pPos.y = _lastPlayerY + player.Body.MoveRelative.z * (m.x * m.x + m.z * m.z) * 10;
+        pPos.y = _lastPlayerY + player.Body.MoveRelative.z * (m.x * m.x + m.z * m.z) * 3;
         float goalRotY = GoalRot.y + player.Body.MoveRelative.x * 5; 
 
         float fps = Time.deltaTime == 0 ? 10e6f : _moveDelay / Time.deltaTime;

@@ -9,12 +9,32 @@ public class Player : MonoBehaviour
 
     [NonSerialized] public CustomRigidBody Body;
     [NonSerialized] public float GroundedHeight; // height at which the player was last grounded
+    [NonSerialized] public Vector3 Spawn;
 
     void Start()
     {
-        Body = new CustomRigidBody(transform, 10, 0.8f, 1.3f, -5, 0.95f, 1.85f);
+        Transform tr = transform;
+        Body = new CustomRigidBody(tr, 8, 0.9f, 1.3f, -5, 0.95f, 1.85f);
+        SetSpawn(0, 0);
+        tr.position = Spawn;
     }
 
+    void SetSpawn(int x, int z)
+    {
+        Spawn = new Vector3(x + 0.5f, Chunk.ChunkSize - 1, z + 0.5f);
+        int chunkX = x / Chunk.ChunkSize, chunkZ = z / Chunk.ChunkSize;
+        if (MapHandler.Chunks.TryGetValue(chunkX + "." + chunkZ, out Chunk chunk))
+        {
+            int i = ((x - chunkX * Chunk.ChunkSize) * Chunk.ChunkSize - chunkZ) * Chunk.ChunkSize + z;
+            while (chunk.Blocks[i + (int)Spawn.y * Chunk.ChunkSize] == 0) Spawn.y--;
+        }
+        else
+            while (NoiseGen.GetBlock(Spawn) == 0)
+                Spawn.y--;
+
+        Spawn.y++;
+    }
+    
     int Floor(float x)
     {
         if (x < 0)
@@ -87,10 +107,13 @@ public class Player : MonoBehaviour
 
         PlaceBreak();
 
-        if (Input.GetKeyDown(KeyCode.R)) // reset
+        if (Input.GetKeyDown(KeyCode.K)) // kill
         {
-            transform.position = new Vector3(0, 5, 0);
+            transform.position = Spawn;
             Body.Movement = Vector3.zero;
         }
+
+        Vector3 pos = transform.position;
+        if (Input.GetKeyDown(KeyCode.R)) SetSpawn((int)pos.x, (int)pos.z); // set spawn
     }
 }
