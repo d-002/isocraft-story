@@ -13,20 +13,15 @@ public static class NoiseGen
     
     public static int GetBlock(Vector3 pos)
     {
-        if (Game.Level == -1) // test level
-        {
-            if (pos.y == 0) return Game.Blocks.Stone;
-            return Game.Blocks.Air;
-        }
         if (Game.Level == 0) // overWorld (temporary test)
         {
             if (pos.y == 0) return Game.Blocks.Bedrock;
-            float height = _noise.GetNoise(pos.x, pos.z) * 2 + 4 +
+            float height = _noise.GetNoise(pos.x, pos.z) * 2 + 5 +
                            _noise.GetNoise(pos.x * 10 + 1000, pos.z * 10 + 1000) / 2;
             if (pos.y > height) return Game.Blocks.Air;
-            if (pos.y + 1 > height) return Game.Blocks.GrassBlock;
-            if (pos.y + 2 < height) return Game.Blocks.Stone;
-            return Game.Blocks.Dirt;
+            if (pos.y + 1 > height) return Game.Blocks.Sand;
+            if (pos.y + 2 < height) return Game.Blocks.Sandstone;
+            return Game.Blocks.RedSand;
         }
 
         throw new ArgumentException("Incorrect level: " + Game.Level);

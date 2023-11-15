@@ -5,16 +5,17 @@ using UnityEngine;
 public class Tile
 {
     public readonly Vector2[] UVs;
-    private readonly int _texWidth = 4, _texHeight = 4;
+    private readonly int _texWidth = 3, _texHeight = 3;
+    private readonly float _offset = 0.5f/32f; // prevent texture bleeding
 
     public Tile(Vector2 pos)
     {
         UVs = new Vector2[]
         {
-            new(pos.x/_texWidth, pos.y/_texHeight),
-            new(pos.x/_texWidth, (pos.y + 1)/_texHeight),
-            new((pos.x + 1)/_texWidth, (pos.y + 1)/_texHeight),
-            new((pos.x + 1)/_texWidth, pos.y/_texHeight)
+            new((pos.x + _offset) / _texWidth, (pos.y + _offset) / _texHeight),
+            new((pos.x + _offset) / _texWidth, (pos.y + 1 - _offset) / _texHeight),
+            new((pos.x + 1 - _offset) / _texWidth, (pos.y + 1 - _offset) / _texHeight),
+            new((pos.x + 1 - _offset) / _texWidth, (pos.y + _offset) / _texHeight)
         };
     }
 }
@@ -65,37 +66,39 @@ public class Game : MonoBehaviour
     static class Tiles
     {
         public static readonly Tile
-            GrassTop = new(new Vector2(0, 3)),
-            GrassSides = new(new Vector2(1, 3)),
-            Dirt = new(new Vector2(2, 3)),
-            Stone = new(new Vector2(0, 2)),
-            Bedrock = new(new Vector2(3, 3)),
-            Cobblestone = new(new Vector2(1, 2));
+            Bedrock = new(new Vector2(0, 2)),
+            Cobblestone = new(new Vector2(1, 2)),
+            RedSand = new(new Vector2(2, 2)),
+            SandstoneSide = new(new Vector2(0, 1)),
+            SandstoneTop = new(new Vector2(1, 1)),
+            SandSide = new(new Vector2(2, 1)),
+            SandTop = new(new Vector2(0, 0));
     }
 
     public static class Blocks
     {
-        public static readonly Dictionary<int, Block> FromId = new Dictionary<int, Block>
-        {
-            {0, new Block()},
-            {1, new Block(1, Tiles.GrassTop, Tiles.GrassSides, Tiles.Dirt)},
-            {2, new Block(2, Tiles.Dirt)},
-            {3, new Block(3, Tiles.Stone)},
-            {4, new Block(4, Tiles.Bedrock)},
-            {5, new Block(5, Tiles.Cobblestone)}
-        };
-
         public static readonly int
             Air = 0,
-            GrassBlock = 1,
-            Dirt = 2,
-            Stone = 3,
+            Sand = 1,
+            RedSand = 2,
+            Sandstone = 3,
             Bedrock = 4,
             Cobblestone = 5;
+        
+        
+        public static readonly Dictionary<int, Block> FromId = new Dictionary<int, Block>
+        {
+            {Air, new Block()},
+            {Sand, new Block(1, Tiles.SandTop, Tiles.SandSide, Tiles.SandTop)},
+            {RedSand, new Block(2, Tiles.RedSand)},
+            {Sandstone, new Block(3, Tiles.SandstoneTop, Tiles.SandstoneSide, Tiles.SandstoneTop)},
+            {Bedrock, new Block(4, Tiles.Bedrock)},
+            {Cobblestone, new Block(5, Tiles.Cobblestone)}
+        };
     }
 
     void Start()
     {
         NoiseGen.Init();
     }
-}
+}    
